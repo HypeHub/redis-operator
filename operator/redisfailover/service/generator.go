@@ -147,6 +147,7 @@ func generateRedisStatefulSet(rf *redisfailoverv1alpha2.RedisFailover, labels ma
 			Template: corev1.PodTemplateSpec{
 				ObjectMeta: metav1.ObjectMeta{
 					Labels: labels,
+					Annotations: spec.Redis.Annotations,
 				},
 				Spec: corev1.PodSpec{
 					Affinity: &corev1.Affinity{
@@ -219,11 +220,13 @@ func generateRedisStatefulSet(rf *redisfailoverv1alpha2.RedisFailover, labels ma
 	if rf.Spec.Redis.Exporter {
 		exporter := createRedisExporterContainer(rf)
 		ss.Spec.Template.Spec.Containers = append(ss.Spec.Template.Spec.Containers, exporter)
-		ss.Spec.Template.ObjectMeta.Annotations = map[string]string{
-			"prometheus.io/scrape": "true",
-			"prometheus.io/port":   "9121",
-			"prometheus.io/path":   "/metrics",
+		// account for custom annotations, if there are none, initialize to an empty map
+		if ss.Spec.Template.ObjectMeta.Annotations == nil {
+			ss.Spec.Template.ObjectMeta.Annotations = make(map[string]string)
 		}
+		ss.Spec.Template.ObjectMeta.Annotations["prometheus.io/scrape"] = "true"
+		ss.Spec.Template.ObjectMeta.Annotations["prometheus.io/port"] = "9121"
+		ss.Spec.Template.ObjectMeta.Annotations["prometheus.io/path"] = "/metrics"
 	}
 
 	return ss
@@ -254,6 +257,7 @@ func generateSentinelDeployment(rf *redisfailoverv1alpha2.RedisFailover, labels 
 			Template: corev1.PodTemplateSpec{
 				ObjectMeta: metav1.ObjectMeta{
 					Labels: labels,
+					Annotations: spec.Sentinel.Annotations,
 				},
 				Spec: corev1.PodSpec{
 					Affinity: &corev1.Affinity{

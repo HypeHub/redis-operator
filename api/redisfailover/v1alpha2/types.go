@@ -45,6 +45,7 @@ type RedisSettings struct {
 	ConfigMap       string                 `json:"configMap,omitempty"`
 	Storage         RedisStorage           `json:"storage,omitempty"`
 	NodeSelector    map[string]string      `json:"nodeSelector,omitempty"`
+	Annotations     map[string]string      `json:"annotations,omitempty"`
 }
 
 // SentinelSettings defines the specification of the sentinel cluster
@@ -53,6 +54,7 @@ type SentinelSettings struct {
 	Resources    RedisFailoverResources `json:"resources,omitempty"`
 	ConfigMap    string                 `json:"configMap,omitempty"`
 	NodeSelector map[string]string      `json:"nodeSelector,omitempty"`
+	Annotations  map[string]string      `json:"annotations,omitempty"`
 }
 
 // RedisFailoverResources sets the limits and requests for a container
